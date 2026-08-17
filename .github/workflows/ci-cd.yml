@@ -1,0 +1,45 @@
+name: CI/CD - Build and Deploy to Kubernetes
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: docker build -t fluidai-backend:${{ github.sha }} -t fluidai-backend:latest ./app
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: fluidai-cluster
+
+      - name: Load image into kind
+        run: kind load docker-image fluidai-backend:latest --name fluidai-cluster
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/configmap.yaml
+          kubectl apply -f k8s/redis.yaml
+          kubectl apply -f k8s/backend.yaml
+          kubectl rollout status deployment/redis --timeout=90s
+          kubectl rollout status deployment/backend --timeout=90s
+
+      - name: Smoke test
+        run: |
+          kubectl port-forward svc/backend 8080:80 &
+          sleep 5
+          curl --fail http://localhost:8080/readyz
+          curl --fail http://localhost:8080/
+
+      - name: Show cluster state on failure
+        if: failure()
+        run: |
+          kubectl get pods -o wide
+          kubectl describe pods
+          kubectl logs -l app=backend --tail=100
