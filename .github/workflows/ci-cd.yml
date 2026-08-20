@@ -42,4 +42,4 @@ jobs:
         run: |
           kubectl get pods -o wide
           kubectl describe pods
-          kubectl logs -l app=backend --tail=100
+          kubectl logs -l app=backend --tail=100 
