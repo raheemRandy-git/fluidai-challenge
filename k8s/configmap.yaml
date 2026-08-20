@@ -3,5 +3,6 @@ kind: ConfigMap
 metadata:
   name: backend-config
 data:
-  REDIS_HOST: "redis-typo"
+  REDIS_HOST: "redis"
+  # REDIS_HOST: "redis-typo"
   REDIS_PORT: "6379"
