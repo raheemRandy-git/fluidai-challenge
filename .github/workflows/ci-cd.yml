@@ -37,7 +37,7 @@ jobs:
           curl --fail http://localhost:8080/readyz
           curl --fail http://localhost:8080/
 
-      - name: Show cluster state on failure
+      - name: Show cluster state on failure 
         if: failure()
         run: |
           kubectl get pods -o wide 
