@@ -28,7 +28,7 @@ jobs:
           kubectl apply -f k8s/redis.yaml
           kubectl apply -f k8s/backend.yaml
           kubectl rollout status deployment/redis --timeout=90s
-          kubectl rollout status deployment/backend --timeout=90s
+          kubectl rollout status deployment/backend --timeout=90s 
 
       - name: Smoke test
         run: |
