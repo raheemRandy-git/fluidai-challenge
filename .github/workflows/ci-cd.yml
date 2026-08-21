@@ -40,6 +40,6 @@ jobs:
       - name: Show cluster state on failure
         if: failure()
         run: |
-          kubectl get pods -o wide
+          kubectl get pods -o wide 
           kubectl describe pods
           kubectl logs -l app=backend --tail=100 
